@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const knex = require('knex')({
     client: 'pg',
@@ -81,18 +82,35 @@ router.post('/login', (req, res, next) => {
 
     if (!validationResult.error) {
         knex('instructor').where({ email }).then(rows => {
-            // console.log(rows);
-            const hashedPassword = rows[0].password;
             if (rows.length > 0) {
                 // found the email in the database.
                 // use brcrypt to compare the passwords
-                bcrypt.compare(password, hashedPassword, (err, result) => {
+                bcrypt.compare(password, rows[0].password, (err, result) => {
                     if (err) {
                         res.status(500);
                         return next(err);
                     }
                     if (result) {
-                        res.json({ success: true, message: 'Logged in successfully!' });
+                        // create a jwt payload
+                        const payload = {
+                            id: rows[0].id,
+                            email: rows[0].email
+                        };
+                        // sign the payload
+                        jwt.sign(payload, process.env.TOKEN_SECRET, {
+                            expiresIn: '1d'
+                        }, (err, token) => {
+                            if (err) {
+                                // something went wrong!
+                                res.status(422);
+                                return next(err);
+                            }
+                            res.json({
+                                success: true,
+                                message: 'Logged in successfully!',
+                                token: token
+                            });
+                        });
                     } else {
                         res.status(401);
                         return next(new Error('Email and password do not match!'));

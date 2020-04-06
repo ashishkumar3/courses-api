@@ -2,6 +2,9 @@ const express = require('express');
 const volleyball = require('volleyball');
 const cors = require('cors');
 
+// Environment variables
+require('dotenv').config();
+
 // Routes
 const authRoute = require('./auth');
 
