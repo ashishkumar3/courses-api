@@ -5,6 +5,9 @@ const cors = require('cors');
 // Environment variables
 require('dotenv').config();
 
+// Middleware
+const middlewares = require('./auth/middlewares');
+
 // Routes
 const authRoute = require('./auth');
 
@@ -15,12 +18,14 @@ app.use(cors({
 }));
 app.use(volleyball);
 app.use(express.json());
+app.use(middlewares.checkTokenSetUser);
 
 const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res, next) => {
     res.json({
-        message: 'This is home page bitches😎😎😎'
+        message: 'This is home page bitches😎😎😎',
+        user: req.user
     });
 });
 
