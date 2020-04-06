@@ -15,7 +15,7 @@ const knex = require('knex')({
 
 const Joi = require('@hapi/joi');
 
-const schema = Joi.object({
+const signupSchema = Joi.object({
     name: Joi.string()
         .alphanum()
         .min(3)
@@ -25,7 +25,13 @@ const schema = Joi.object({
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
     password: Joi.string()
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+});
 
+const loginSchema = Joi.object({
+    email: Joi.string()
+        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+    password: Joi.string()
+        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
 });
 
 router.get('/', (req, res, next) => {
@@ -36,12 +42,12 @@ router.get('/', (req, res, next) => {
 
 // POST /auth/signup
 router.post('/signup', (req, res, next) => {
-    const result = schema.validate({
+    const validationResult = signupSchema.validate({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password
     });
-    if (!result.error) {
+    if (!validationResult.error) {
         knex('instructor').where({
             email: req.body.email
         }).select('id').then(rows => {
@@ -61,6 +67,40 @@ router.post('/signup', (req, res, next) => {
                         });
                     });
                 });
+            }
+        });
+    } else {
+        res.status(422);
+        next(result.error);
+    }
+});
+
+router.post('/login', (req, res, next) => {
+    const { email, password } = req.body;
+    const validationResult = loginSchema.validate({ email, password });
+
+    if (!validationResult.error) {
+        knex('instructor').where({ email }).then(rows => {
+            // console.log(rows);
+            const hashedPassword = rows[0].password;
+            if (rows.length > 0) {
+                // found the email in the database.
+                // use brcrypt to compare the passwords
+                bcrypt.compare(password, hashedPassword, (err, result) => {
+                    if (err) {
+                        res.status(500);
+                        return next(err);
+                    }
+                    if (result) {
+                        res.json({ success: true, message: 'Logged in successfully!' });
+                    } else {
+                        res.status(401);
+                        return next(new Error('Email and password do not match!'));
+                    }
+                });
+            } else {
+                res.status(404);
+                next(new Error('The email you entered is not registered! Maybe try signing in first.'));
             }
         });
     } else {
