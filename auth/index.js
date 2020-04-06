@@ -63,8 +63,27 @@ router.post('/signup', (req, res, next) => {
                         password: hashedPassword
                     }).returning('*').then(row => {
                         console.log(row);
-                        res.json({
-                            message: 'User registered!'
+
+                        // create a jwt payload
+                        const payload = {
+                            id: row[0].id,
+                            email: row[0].email
+                        };
+
+                        // sign the payload
+                        jwt.sign(payload, process.env.TOKEN_SECRET, {
+                            expiresIn: '1d'
+                        }, (err, token) => {
+                            if (err) {
+                                // something went wrong!
+                                res.status(422);
+                                return next(err);
+                            }
+                            res.json({
+                                success: true,
+                                message: 'Signed Up successfully!',
+                                token: token
+                            });
                         });
                     });
                 });
