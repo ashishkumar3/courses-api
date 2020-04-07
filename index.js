@@ -10,6 +10,7 @@ const middlewares = require('./auth/middlewares');
 
 // Routes
 const authRoute = require('./auth');
+const notesRoute = require('./api/notes');
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/auth', authRoute);
+app.use('/api/v1/notes', middlewares.isLoggedIn, notesRoute);
+
 
 function notFound(req, res, next) {
     res.status(404);

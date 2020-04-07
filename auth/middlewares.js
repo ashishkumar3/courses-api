@@ -16,3 +16,13 @@ exports.checkTokenSetUser = (req, res, next) => {
     }
     next();
 };
+
+exports.isLoggedIn = (req, res, next) => {
+    if (req.user) {
+        next();
+    } else {
+        const error = new Error('🛑 Un-Authorized 🛑');
+        res.status(401);
+        next(error);
+    }
+};
