@@ -1,4 +1,5 @@
 module.exports = {
+    user: 'user',
     instructor: 'instructor',
     student: 'student',
     student_type: 'student_type',
@@ -7,6 +8,7 @@ module.exports = {
     related_course: 'related_course',
     course_info: 'course_info',
     course_tag: 'course_tag',
+    notes: 'notes',
     state: 'state',
     country: 'country'
 }

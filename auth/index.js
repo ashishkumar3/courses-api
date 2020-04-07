@@ -49,7 +49,7 @@ router.post('/signup', (req, res, next) => {
         password: req.body.password
     });
     if (!validationResult.error) {
-        knex('instructor').where({
+        knex('user').where({
             email: req.body.email
         }).select('id').then(rows => {
             if (rows.length > 0) {
@@ -57,7 +57,7 @@ router.post('/signup', (req, res, next) => {
                 next(new Error('Email already registered. Choose a different one.'));
             } else {
                 bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
-                    knex('instructor').insert({
+                    knex('user').insert({
                         name: req.body.name,
                         email: req.body.email,
                         password: hashedPassword
@@ -88,6 +88,9 @@ router.post('/signup', (req, res, next) => {
                     });
                 });
             }
+        }).catch(err => {
+            res.status(500);
+            next(err.message);
         });
     } else {
         res.status(422);
@@ -100,7 +103,7 @@ router.post('/login', (req, res, next) => {
     const validationResult = loginSchema.validate({ email, password });
 
     if (!validationResult.error) {
-        knex('instructor').where({ email }).then(rows => {
+        knex('user').where({ email }).then(rows => {
             if (rows.length > 0) {
                 // found the email in the database.
                 // use brcrypt to compare the passwords
@@ -139,6 +142,9 @@ router.post('/login', (req, res, next) => {
                 res.status(404);
                 next(new Error('The email you entered is not registered! Maybe try signing in first.'));
             }
+        }).catch(err => {
+            res.status(500);
+            next(err.message);
         });
     } else {
         res.status(422);
