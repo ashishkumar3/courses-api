@@ -3,37 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const knex = require('knex')({
-    client: 'pg',
-    version: '8.0.0',
-    connection: {
-        host: '127.0.0.1',
-        user: 'postgres',
-        password: 'Ashish@123',
-        database: 'test'
-    }
-});
+// DB Configs
+const knex = require('../db/dbConfig');
 
-const Joi = require('@hapi/joi');
-
-const signupSchema = Joi.object({
-    name: Joi.string()
-        .alphanum()
-        .min(3)
-        .max(30)
-        .required(),
-    email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-});
-
-const loginSchema = Joi.object({
-    email: Joi.string()
-        .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-    password: Joi.string()
-        .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-});
+// Schemas
+const signupSchema = require('../schemas/signup.schema');
+const loginSchema = require('../schemas/login.schema');
 
 router.get('/', (req, res, next) => {
     res.json({
@@ -94,7 +69,7 @@ router.post('/signup', (req, res, next) => {
         });
     } else {
         res.status(422);
-        next(result.error);
+        next(validationResult.error);
     }
 });
 
@@ -148,7 +123,7 @@ router.post('/login', (req, res, next) => {
         });
     } else {
         res.status(422);
-        next(result.error);
+        next(validationResult.error);
     }
 });
 
