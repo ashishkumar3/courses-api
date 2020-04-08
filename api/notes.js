@@ -8,8 +8,22 @@ const knex = require('../db/dbConfig');
 const noteSchema = require('../schemas/note.schema');
 
 router.get('/', (req, res, next) => {
-    res.json({
-        message: 'This has your notes📒'
+
+    knex.schema.hasTable('notes').then(exists => {
+        if (!exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        knex('notes').select('title', 'created_at', 'updated_at').where({
+            user_id: req.user.id
+        }).orderBy('id', 'DESC').then(rows => {
+            console.log(rows, res.statusCode);
+            res.json(rows);
+        });
+    }).catch(err => {
+        next(err);
     });
 });
 

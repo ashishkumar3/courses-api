@@ -90,6 +90,7 @@ exports.up = async (knex) => {
         table.string('title');
         table.string('description');
         references(table, 'user');
+        addDefaultColumns(table);
     });
 };
 
