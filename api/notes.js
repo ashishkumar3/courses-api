@@ -16,7 +16,7 @@ router.get('/', (req, res, next) => {
             return;
         }
 
-        knex('notes').select('title', 'created_at', 'updated_at').where({
+        knex('notes').select('title', 'created_at', 'updated_at', 'description').where({
             user_id: req.user.id
         }).orderBy('id', 'DESC').then(rows => {
             console.log(rows, res.statusCode);

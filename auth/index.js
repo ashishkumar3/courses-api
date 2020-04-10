@@ -31,7 +31,7 @@ router.post('/signup', (req, res, next) => {
                 res.status(409);
                 next(new Error('Email already registered. Choose a different one.'));
             } else {
-                bcrypt.hash(req.body.password.trim(), 12).then(hashedPassword => {
+                bcrypt.hash(req.body.password, 12).then(hashedPassword => {
                     knex('user').insert({
                         name: req.body.name,
                         email: req.body.email,
@@ -91,7 +91,9 @@ router.post('/login', (req, res, next) => {
                         // create a jwt payload
                         const payload = {
                             id: rows[0].id,
-                            email: rows[0].email
+                            name: rows[0].name,
+                            email: rows[0].email,
+                            created_at: rows[0].created_at
                         };
                         // sign the payload
                         jwt.sign(payload, process.env.TOKEN_SECRET, {

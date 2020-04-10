@@ -1,48 +1,13 @@
 const Knex = require('knex');
 
 const tableNames = require('../../contants/tableNames');
+const tableUtils = require('../../lib/tableUtils');
 
 /**
  * @param {Knex} knex
  */
 
-function addDefaultColumns(table) {
-    table.timestamps(false, true);
-    table.datetime('deleted_at');
-}
 
-function createNameTable(knex, table_name) {
-    return knex.schema.createTable(table_name, table => {
-        table.increments().notNullable();
-        table.string('name').notNullable().unique();
-        addDefaultColumns(table);
-    });
-}
-
-function references(table, tableName) {
-    table
-        .integer(`${tableName}_id`)
-        .unsigned()
-        .references('id')
-        .inTable(tableName)
-        .onDelete('cascade');
-}
-
-function url(table, columnName) {
-    table.string(columnName, 2000);
-}
-
-function email(table, columnName) {
-    return table.string(columnName, 254);
-}
-
-function password(table, columnName) {
-    return table.string(columnName, 127);
-}
-
-function rating(table, columnName) {
-    table.decimal(columnName, 2);
-}
 
 exports.up = async (knex) => {
     await Promise.all([
@@ -89,7 +54,7 @@ exports.up = async (knex) => {
         table.increments().notNullable();
         table.string('title');
         table.string('description');
-        references(table, 'user');
+        references(table, tableNames.user);
         addDefaultColumns(table);
     });
 };

@@ -1,6 +1,7 @@
 const express = require('express');
 const volleyball = require('volleyball');
 const cors = require('cors');
+const helmet = require('helmet');
 
 // Environment variables
 require('dotenv').config();
@@ -11,6 +12,8 @@ const middlewares = require('./auth/middlewares');
 // Routes
 const authRoute = require('./auth');
 const notesRoute = require('./api/notes');
+const profileRoute = require('./api/profile');
+const usersRoute = require('./api/users');
 
 const app = express();
 
@@ -19,6 +22,7 @@ app.use(cors({
 }));
 app.use(volleyball);
 app.use(express.json());
+app.use(helmet());
 app.use(middlewares.checkTokenSetUser);
 
 const PORT = process.env.PORT || 3000;
@@ -32,6 +36,8 @@ app.get('/', (req, res, next) => {
 
 app.use('/auth', authRoute);
 app.use('/api/v1/notes', middlewares.isLoggedIn, notesRoute);
+app.use('/api/v1/users', usersRoute);
+// app.use('/api/v1/profile', middlewares.isLoggedIn, profileRoute);
 
 
 function notFound(req, res, next) {
