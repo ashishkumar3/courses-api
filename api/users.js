@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
             return next(new Error('You have are lost!'));
         }
 
-        knex('user').select('id', 'name', 'email', 'created_at', 'updated_at').then(users => {
+        knex('user').select('id', 'name', 'email', 'created_at', 'updated_at', 'role', 'active').then(users => {
             res.json(users);
         }).catch(err => next(err));
     });

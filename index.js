@@ -36,7 +36,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/auth', authRoute);
 app.use('/api/v1/notes', middlewares.isLoggedIn, notesRoute);
-app.use('/api/v1/users', usersRoute);
+app.use('/api/v1/users', middlewares.isLoggedIn, middlewares.isAdmin, usersRoute);
 // app.use('/api/v1/profile', middlewares.isLoggedIn, profileRoute);
 
 

@@ -35,7 +35,9 @@ router.post('/signup', (req, res, next) => {
                     knex('user').insert({
                         name: req.body.name,
                         email: req.body.email,
-                        password: hashedPassword
+                        password: hashedPassword,
+                        role: 'user',
+                        active: true
                     }).returning('*').then(row => {
                         console.log(row);
 
@@ -93,7 +95,9 @@ router.post('/login', (req, res, next) => {
                             id: rows[0].id,
                             name: rows[0].name,
                             email: rows[0].email,
-                            created_at: rows[0].created_at
+                            created_at: rows[0].created_at,
+                            admin: rows[0].admin,
+                            role: rows[0].role
                         };
                         // sign the payload
                         jwt.sign(payload, process.env.TOKEN_SECRET, {

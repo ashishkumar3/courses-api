@@ -17,12 +17,27 @@ exports.checkTokenSetUser = (req, res, next) => {
     next();
 };
 
+function unAuthorized(res, next) {
+    const error = new Error('🛑 Un-Authorized 🛑');
+    res.status(401);
+    next(error);
+}
+
 exports.isLoggedIn = (req, res, next) => {
     if (req.user) {
+        console.log('Authorized user!');
         next();
     } else {
-        const error = new Error('🛑 Un-Authorized 🛑');
-        res.status(401);
-        next(error);
+        unAuthorized(res, next);
+    }
+};
+
+exports.isAdmin = (req, res, next) => {
+    if (req.user.role === 'admin') {
+        console.log('Admin found!');
+        next();
+    } else {
+        console.log(req.user);
+        unAuthorized(res, next);
     }
 };

@@ -14,14 +14,16 @@ exports.up = async (knex) => {
         knex.schema.createTable(tableNames.user, table => {
             table.increments().notNullable();
             table.string('name').notNullable();
-            email(table, 'email').notNullable().unique();
-            password(table, 'password').notNullable();
+            tableUtils.email(table, 'email').notNullable().unique();
+            tableUtils.password(table, 'password').notNullable();
+            table.string('role').notNullable();
+            table.boolean('active').notNullable();
             // url(table, 'image_url');
             // url(table, 'website_url');
             // rating(table, 'rating');
             // references(table, 'state');
             // references(table, 'country');
-            addDefaultColumns(table);
+            tableUtils.addDefaultColumns(table);
         }),
         // createNameTable(knex, tableNames.student_type),
         // createNameTable(knex, tableNames.state),
@@ -54,8 +56,8 @@ exports.up = async (knex) => {
         table.increments().notNullable();
         table.string('title');
         table.string('description');
-        references(table, tableNames.user);
-        addDefaultColumns(table);
+        tableUtils.references(table, tableNames.user);
+        tableUtils.addDefaultColumns(table);
     });
 };
 
