@@ -82,6 +82,10 @@ router.post('/login', (req, res, next) => {
     if (!validationResult.error) {
         knex('user').where({ email }).then(rows => {
             if (rows.length > 0) {
+                if (!rows[0].active) {
+                    res.status(422);
+                    return next(new Error('Cannot login. User has been deactivated!'));
+                }
                 // found the email in the database.
                 // use brcrypt to compare the passwords
                 bcrypt.compare(password, rows[0].password, (err, result) => {
@@ -96,8 +100,8 @@ router.post('/login', (req, res, next) => {
                             name: rows[0].name,
                             email: rows[0].email,
                             created_at: rows[0].created_at,
-                            admin: rows[0].admin,
-                            role: rows[0].role
+                            role: rows[0].role,
+                            active: rows[0].active,
                         };
                         // sign the payload
                         jwt.sign(payload, process.env.TOKEN_SECRET, {
