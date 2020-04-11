@@ -7,27 +7,30 @@ const noteSchema = require('../schemas/note.schema');
 // DB Config
 const knex = require('../db/dbConfig');
 
-exports.getNotes = (req, res, next) => {
+exports.getNotes = async (req, res, next) => {
 
-    knex.schema.hasTable(tableNames.notes).then(exists => {
+    try {
+        const exists = await knex.schema.hasTable(tableNames.notes);
+
         if (!exists) {
             res.status(404);
             next(new Error('I think you are lost!'));
             return;
         }
 
-        knex(tableNames.notes).select('title', 'created_at', 'updated_at', 'description').where({
+        const rows = await knex(tableNames.notes).select('title', 'created_at', 'updated_at', 'description').where({
             user_id: req.user.id
-        }).orderBy('id', 'DESC').then(rows => {
-            console.log(rows, res.statusCode);
-            res.json(rows);
-        });
-    }).catch(err => {
-        next(err);
-    });
+        }).orderBy('id', 'DESC');
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
 };
 
-exports.createNote = (req, res, next) => {
+exports.createNote = async (req, res, next) => {
 
     const { title, description } = req.body;
     const user_id = req.user.id;
@@ -40,26 +43,28 @@ exports.createNote = (req, res, next) => {
         return;
     }
 
-    knex.schema.hasTable(tableNames.notes).then(exists => {
+    try {
+        const exists = await knex.schema.hasTable(tableNames.notes);
+        // .then(exists => {
         if (!exists) {
             res.status(404);
             next(new Error('I think you are lost!'));
             return;
         }
 
-        knex(tableNames.notes).insert({
+        const row = await knex(tableNames.notes).insert({
             title, description, user_id
-        }).returning('*').then(row => {
-            if (row.length < 1) {
-                throw new Error('Something went wrong! Try again later.');
-            }
-            res.json({
-                success: true,
-                note: row[0]
-            });
+        }).returning('*');
+
+        if (row.length < 1) {
+            throw new Error('Something went wrong! Try again later.');
+        }
+        res.json({
+            success: true,
+            note: row[0]
         });
-    }).catch(err => {
+    } catch (error) {
         res.status(500);
-        next(err);
-    });
+        next(error);
+    }
 };
