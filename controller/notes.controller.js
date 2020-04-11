@@ -1,22 +1,22 @@
-const express = require('express');
-const router = express.Router();
-
-// DB Config
-const knex = require('../db/dbConfig');
+// Tables
+const tableNames = require('../contants/tableNames');
 
 // Schemas
 const noteSchema = require('../schemas/note.schema');
 
-router.get('/', (req, res, next) => {
+// DB Config
+const knex = require('../db/dbConfig');
 
-    knex.schema.hasTable('notes').then(exists => {
+exports.getNotes = (req, res, next) => {
+
+    knex.schema.hasTable(tableNames.notes).then(exists => {
         if (!exists) {
             res.status(404);
             next(new Error('I think you are lost!'));
             return;
         }
 
-        knex('notes').select('title', 'created_at', 'updated_at', 'description').where({
+        knex(tableNames.notes).select('title', 'created_at', 'updated_at', 'description').where({
             user_id: req.user.id
         }).orderBy('id', 'DESC').then(rows => {
             console.log(rows, res.statusCode);
@@ -25,9 +25,9 @@ router.get('/', (req, res, next) => {
     }).catch(err => {
         next(err);
     });
-});
+};
 
-router.post('/create', (req, res, next) => {
+exports.createNote = (req, res, next) => {
 
     const { title, description } = req.body;
     const user_id = req.user.id;
@@ -40,14 +40,14 @@ router.post('/create', (req, res, next) => {
         return;
     }
 
-    knex.schema.hasTable('notes').then(exists => {
+    knex.schema.hasTable(tableNames.notes).then(exists => {
         if (!exists) {
             res.status(404);
             next(new Error('I think you are lost!'));
             return;
         }
 
-        knex('notes').insert({
+        knex(tableNames.notes).insert({
             title, description, user_id
         }).returning('*').then(row => {
             if (row.length < 1) {
@@ -62,6 +62,4 @@ router.post('/create', (req, res, next) => {
         res.status(500);
         next(err);
     });
-});
-
-module.exports = router;
+};

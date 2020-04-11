@@ -11,7 +11,7 @@ const middlewares = require('./auth/middlewares');
 
 // Routes
 const authRoute = require('./auth');
-const notesRoute = require('./api/notes');
+const notesRoute = require('./api/notes.routes');
 const profileRoute = require('./api/profile');
 const adminRoute = require('./api/admin.routes');
 
