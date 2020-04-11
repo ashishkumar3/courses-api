@@ -1,29 +1,30 @@
-const express = require('express');
-const bcrypt = require('bcryptjs');
+// Tables
+const tableNames = require('../contants/tableNames');
 
-const router = express.Router();
-
+// Database configurations.
 const knex = require('../db/dbConfig');
 
 // Schema
 const userSchema = require('../schemas/user.schema');
 
-router.get('/', (req, res, next) => {
-    knex.schema.hasTable('user').then(exists => {
+// Returns all users in the database --- only admins can access this route.
+exports.getUsers = (req, res, next) => {
+    knex.schema.hasTable(tableNames.user).then(exists => {
         if (!exists) {
             res.status(404);
             return next(new Error('You have are lost!'));
         }
 
-        knex('user').select('id', 'name', 'email', 'created_at', 'updated_at', 'role', 'active').then(users => {
+        knex(tableNames.user).select('id', 'name', 'email', 'created_at', 'updated_at', 'role', 'active').then(users => {
             res.json(users);
         }).catch(err => next(err));
     });
-});
+};
 
-router.patch('/:id', (req, res, next) => {
+// Update a user --- only admin can update.
+exports.updateUser = (req, res, next) => {
 
-    knex.schema.hasTable('user').then(exists => {
+    knex.schema.hasTable(tableNames.user).then(exists => {
 
         if (!exists) {
             res.status(404);
@@ -50,12 +51,12 @@ router.patch('/:id', (req, res, next) => {
             bcrypt.hash(req.body.password, 12).then(hashedPassword => {
                 updatedUser.password = hashedPassword;
                 console.log('Creating hash...');
-                knex('user').select('*').where('id', req.params.id).then(rows => {
+                knex(tableNames.user).select('*').where('id', req.params.id).then(rows => {
                     if (!rows[0]) {
                         res.status(404);
                         return next(new Error('User not found!'));
                     }
-                    return knex('user').update({
+                    return knex(tableNames.user).update({
                         ...rows[0], ...updatedUser
                     }).where({
                         id: rows[0].id
@@ -65,12 +66,12 @@ router.patch('/:id', (req, res, next) => {
                 });
             });
         } else {
-            knex('user').select('*').where('id', req.params.id).then(rows => {
+            knex(tableNames.user).select('*').where('id', req.params.id).then(rows => {
                 if (!rows[0]) {
                     res.status(404);
                     return next(new Error('User not found!'));
                 }
-                return knex('user').update({
+                return knex(tableNames.user).update({
                     ...rows[0], ...updatedUser
                 }).where({
                     id: rows[0].id
@@ -83,7 +84,4 @@ router.patch('/:id', (req, res, next) => {
         res.status(500);
         next(err);
     });
-});
-
-
-module.exports = router;
+};

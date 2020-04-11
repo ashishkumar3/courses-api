@@ -4,8 +4,6 @@ const router = express.Router();
 // Controllers
 const authController = require('../controller/auth.controller');
 
-
-
 router.get('/', (req, res, next) => {
     res.json({
         message: 'This is auth page bitches🔒🔒🔒'
