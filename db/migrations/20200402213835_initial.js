@@ -25,6 +25,11 @@ exports.up = async (knex) => {
             // references(table, 'country');
             tableUtils.addDefaultColumns(table);
         }),
+        knex.schema.createTable(tableNames.country, table => {
+            table.increments().notNullable();
+            table.string('name').notNullable();
+            table.string('code').notNullable();
+        })
         // createNameTable(knex, tableNames.student_type),
         // createNameTable(knex, tableNames.state),
         // createNameTable(knex, tableNames.country),
@@ -52,11 +57,44 @@ exports.up = async (knex) => {
     //     references(table, 'instructor');
     // });
 
+    // Notes Table
     await knex.schema.createTable(tableNames.notes, table => {
         table.increments().notNullable();
         table.string('title');
         table.string('description');
         tableUtils.references(table, tableNames.user);
+        tableUtils.addDefaultColumns(table);
+    });
+
+    // Question
+    await knex.schema.createTable(tableNames.question, table => {
+        table.increments().notNullable();
+        table.string('title');
+        table.string('description');
+        tableUtils.rating(table, 'rating');
+        tableUtils.references(table, tableNames.user);
+        tableUtils.addDefaultColumns(table);
+    });
+
+    // answer
+    await knex.schema.createTable(tableNames.answer, table => {
+        table.increments().notNullable();
+        table.string('title');
+        table.string('description');
+        tableUtils.rating(table, 'rating');
+        tableUtils.references(table, tableNames.user);
+        tableUtils.references(table, tableNames.question);
+        tableUtils.addDefaultColumns(table);
+    });
+
+    // Comment
+    await knex.schema.createTable(tableNames.comment, table => {
+        table.increments().notNullable();
+        table.string('description');
+        tableUtils.rating(table, 'rating');
+        tableUtils.references(table, tableNames.user);
+        tableUtils.references(table, tableNames.question);
+        tableUtils.references(table, tableNames.answer);
         tableUtils.addDefaultColumns(table);
     });
 };
@@ -69,7 +107,10 @@ exports.down = async (knex) => {
         // tableNames.student_type,
         // tableNames.student,
         // tableNames.state,
-        // tableNames.country,
+        tableNames.comment,
+        tableNames.answer,
+        tableNames.question,
+        tableNames.country,
         tableNames.notes,
         tableNames.user,
     ].map(table_name => knex.schema.dropTable(table_name)));

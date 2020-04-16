@@ -42,10 +42,9 @@ exports.createNote = async (req, res, next) => {
         next(validationResult.error);
         return;
     }
-
     try {
         const exists = await knex.schema.hasTable(tableNames.notes);
-        // .then(exists => {
+
         if (!exists) {
             res.status(404);
             next(new Error('I think you are lost!'));
@@ -61,7 +60,12 @@ exports.createNote = async (req, res, next) => {
         }
         res.json({
             success: true,
-            note: row[0]
+            note: {
+                created_at: row[0].created_at,
+                updated_at: row[0].updated_at,
+                description: row[0].description,
+                title: row[0].title,
+            }
         });
     } catch (error) {
         res.status(500);

@@ -8,17 +8,17 @@ const knex = require('../db/dbConfig');
 const userSchema = require('../schemas/user.schema');
 
 // Returns all users in the database --- only admins can access this route.
-exports.getUsers = (req, res, next) => {
-    knex.schema.hasTable(tableNames.user).then(exists => {
-        if (!exists) {
-            res.status(404);
-            return next(new Error('You have are lost!'));
-        }
+exports.getUsers = async (req, res, next) => {
+    const exists = await knex.schema.hasTable(tableNames.user);
 
-        knex(tableNames.user).select('id', 'name', 'email', 'created_at', 'updated_at', 'role', 'active').then(users => {
-            res.json(users);
-        }).catch(err => next(err));
-    });
+    if (!exists) {
+        res.status(404);
+        return next(new Error('You have are lost!'));
+    }
+
+    const users = await knex(tableNames.user).select('id', 'name', 'email', 'created_at', 'updated_at', 'role', 'active');
+
+    res.json(users);
 };
 
 // Update a user --- only admin can update.

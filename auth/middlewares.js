@@ -28,6 +28,7 @@ exports.isLoggedIn = (req, res, next) => {
         console.log('Authorized user!');
         next();
     } else {
+        console.log('not logged in!');
         unAuthorized(res, next);
     }
 };
@@ -38,6 +39,7 @@ exports.isAdmin = (req, res, next) => {
         next();
     } else {
         console.log(req.user);
+        console.log('not an admin!');
         unAuthorized(res, next);
     }
 };

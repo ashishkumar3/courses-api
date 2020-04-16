@@ -10,5 +10,8 @@ module.exports = {
     course_tag: 'course_tag',
     notes: 'notes',
     state: 'state',
-    country: 'country'
+    country: 'country',
+    question: 'question',
+    answer: 'answer',
+    comment: 'comment'
 }
