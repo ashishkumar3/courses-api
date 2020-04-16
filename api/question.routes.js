@@ -16,4 +16,7 @@ router.post('/ask', questionController.createQuestion);
 // answer a question
 router.post('/:id/answer', questionController.answerQuestion);
 
+// comment on a question
+router.post('/:id/comment', questionController.commentOnQuestion);
+
 module.exports = router;

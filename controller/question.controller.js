@@ -3,12 +3,11 @@ const tableNames = require('../contants/tableNames');
 
 // Schemas
 
-
 // DB Config
 const knex = require('../db/dbConfig');
 
 
-// Add a question to the database.
+// Add a question to the database. GET /api/v1/questions/ask
 exports.createQuestion = async (req, res, next) => {
 
     const { title, description } = req.body;
@@ -56,7 +55,7 @@ exports.createQuestion = async (req, res, next) => {
 
 };
 
-// Get all questions from the database.
+// Get all questions from the database. GET /api/v1/questions
 exports.getAllQuestions = async (req, res, next) => {
     try {
         const exists = await knex.schema.hasTable(tableNames.question);
@@ -84,9 +83,6 @@ exports.getQuestion = async (req, res, next) => {
 
     const ques_id = req.params.id;
 
-    // check if the question exists with that id
-    // const ques = 
-
     try {
         const exists = await knex.schema.hasTable(tableNames.question);
 
@@ -106,19 +102,23 @@ exports.getQuestion = async (req, res, next) => {
             question_id: ques_id
         });
 
+        const ansIds = [];
+
+        answers.forEach(answer => {
+            ansIds.push(answer.id);
+        });
+
         // get all the comments in the question and answers for the question.
         // 2 types of comments 
         // 1. Comment on the question
         // 2. Comment on the answers given to that question.
-        // const commentsOnQues = await knex(tableNames.comment).select('*').where({
-        //     question_id: ques_id
-        // });
-        // const commentsOnAns = await knex(tableNames.comment).select('*').where({
-
-        // });
+        const commentsOnQues = await knex(tableNames.comment).select('*').where({
+            question_id: ques_id
+        });
+        const commentsOnAns = await knex(tableNames.comment).select('*').whereIn('answer_id', ansIds);
 
         res.json({
-            question, answers
+            question, answers, comments: [...commentsOnQues, ...commentsOnAns]
         });
 
     } catch (error) {
@@ -155,6 +155,38 @@ exports.answerQuestion = async (req, res, next) => {
         }).returning('*');
 
         res.json(answer);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
+};
+
+// Add comment to a question POST /api/v1/questions/:id/comment
+exports.commentOnQuestion = async (req, res, next) => {
+    const ques_id = req.params.id;
+
+    try {
+        const table_exists = await knex.schema.hasTable(tableNames.question);
+
+        const ques_exists = await knex(tableNames.question).where({
+            id: ques_id
+        });
+
+        if (!table_exists || !ques_exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        const comment = await knex(tableNames.comment).insert({
+            description: req.body.comment,
+            user_id: req.user.id,
+            question_id: ques_id,
+            rating: 0
+        }).returning('*');
+
+        res.json(comment);
 
     } catch (error) {
         res.status(500);
