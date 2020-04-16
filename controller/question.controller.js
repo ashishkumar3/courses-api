@@ -77,7 +77,7 @@ exports.getAllQuestions = async (req, res, next) => {
     }
 };
 
-// Get a specific question
+// Get a specific question and answers to tha question
 // GET /api/v1/questions/:id
 
 exports.getQuestion = async (req, res, next) => {
@@ -96,15 +96,68 @@ exports.getQuestion = async (req, res, next) => {
             return;
         }
 
-        const rows = await knex(tableNames.question).select('*').where({
+        // Get the specific question
+        const question = await knex(tableNames.question).select('*').where({
             id: ques_id
         });
 
-        res.json(rows);
+        // get all answers to the question
+        const answers = await knex(tableNames.answer).select('*').where({
+            question_id: ques_id
+        });
+
+        // get all the comments in the question and answers for the question.
+        // 2 types of comments 
+        // 1. Comment on the question
+        // 2. Comment on the answers given to that question.
+        // const commentsOnQues = await knex(tableNames.comment).select('*').where({
+        //     question_id: ques_id
+        // });
+        // const commentsOnAns = await knex(tableNames.comment).select('*').where({
+
+        // });
+
+        res.json({
+            question, answers
+        });
 
     } catch (error) {
         res.status(500);
         next(error);
     }
 
+};
+
+// Answer a question POST /api/v1/questions/:id/answer
+exports.answerQuestion = async (req, res, next) => {
+    const ques_id = req.params.id;
+
+    // check if table exists, then check if ques exists
+
+    try {
+        const table_exists = await knex.schema.hasTable(tableNames.question);
+
+        const ques_exists = await knex(tableNames.question).where({
+            id: ques_id
+        });
+
+        if (!table_exists || !ques_exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        const answer = await knex(tableNames.answer).insert({
+            description: req.body.ans,
+            user_id: req.user.id,
+            question_id: ques_id,
+            rating: 0
+        }).returning('*');
+
+        res.json(answer);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
 };
