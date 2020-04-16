@@ -13,6 +13,7 @@ const middlewares = require('./auth/middlewares');
 const authRoute = require('./auth');
 const notesRoute = require('./api/notes.routes');
 const questionRoute = require('./api/question.routes');
+const userRoute = require('./api/user.routes');
 // const profileRoute = require('./api/profile.routes');
 const adminRoute = require('./api/admin.routes');
 
@@ -39,6 +40,7 @@ app.use('/auth', authRoute);
 app.use('/api/v1/notes', middlewares.isLoggedIn, notesRoute);
 app.use('/api/v1/admin', middlewares.isLoggedIn, middlewares.isAdmin, adminRoute);
 app.use('/api/v1/questions', questionRoute);
+app.use('/api/v1/users', userRoute);
 // app.use('/api/v1/profile', middlewares.isLoggedIn, profileRoute);
 
 

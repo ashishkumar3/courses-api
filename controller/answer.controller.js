@@ -7,4 +7,3 @@ const tableNames = require('../contants/tableNames');
 // DB Config
 const knex = require('../db/dbConfig');
 
-// Get all answers from a particular user.
