@@ -76,3 +76,35 @@ exports.getAllQuestions = async (req, res, next) => {
         next(error);
     }
 };
+
+// Get a specific question
+// GET /api/v1/questions/:id
+
+exports.getQuestion = async (req, res, next) => {
+
+    const ques_id = req.params.id;
+
+    // check if the question exists with that id
+    // const ques = 
+
+    try {
+        const exists = await knex.schema.hasTable(tableNames.question);
+
+        if (!exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        const rows = await knex(tableNames.question).select('*').where({
+            id: ques_id
+        });
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
+
+};
