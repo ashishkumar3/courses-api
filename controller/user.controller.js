@@ -7,6 +7,31 @@ const tableNames = require('../contants/tableNames');
 // DB Config
 const knex = require('../db/dbConfig');
 
+// GET /api/v1/users/:id/questions
+exports.getQuestionsByUser = async (req, res, next) => {
+    const user_id = req.params.id;
+
+    try {
+        const exists = await knex.schema.hasTable(tableNames.user);
+
+        if (!exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        const rows = await knex(tableNames.question).select('*').where({
+            user_id: user_id
+        });
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
+};
+
 // GET /api/v1/users/:id/answers
 exports.getAnswersByUser = async (req, res, next) => {
     const user_id = req.params.id;
@@ -21,6 +46,31 @@ exports.getAnswersByUser = async (req, res, next) => {
         }
 
         const rows = await knex(tableNames.answer).select('*').where({
+            user_id: user_id
+        });
+
+        res.json(rows);
+
+    } catch (error) {
+        res.status(500);
+        next(error);
+    }
+};
+
+// GET /api/v1/users/:id/comments
+exports.getCommentsByUser = async (req, res, next) => {
+    const user_id = req.params.id;
+
+    try {
+        const exists = await knex.schema.hasTable(tableNames.user);
+
+        if (!exists) {
+            res.status(404);
+            next(new Error('I think you are lost!'));
+            return;
+        }
+
+        const rows = await knex(tableNames.comment).select('*').where({
             user_id: user_id
         });
 
