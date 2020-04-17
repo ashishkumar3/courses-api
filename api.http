@@ -1,0 +1,129 @@
+### Return the user id and other information from the token. Basically we test the token here and check if authorized user or not.
+GET http://localhost:3000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+### Test route maybe delete later.
+
+GET http://localhost:3000/auth
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+### POST request to sign up a user. Request need to provide json content type. Body should have name, email and password. (Maybe add more later).
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+{   
+    "name": "asd",
+    "email": "asd@gmail.com",
+    "password": "asd"
+}
+
+### Return all notes from the logged in user. Users can only see the notes they write. So we need to provide the authentication token from which we can take the user id. This user id can be used to fetch the notes written by the user.
+
+GET http://localhost:3000/api/v1/notes
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+### Create a note. Content type is json Authorization token is to be passed. Body has title and decsription of the note. Returns the note generated.
+
+POST http://localhost:3000/api/v1/notes/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+{
+    "title": "This is the note title",
+    "description": "top secret note writing!"
+}
+
+###
+
+GET http://localhost:3000/api/v1/admin/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJjcmVhdGVkX2F0IjoiMjAyMC0wNC0xMFQyMToxMDoxOS40NDNaIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTg2NTU0ODg2LCJleHAiOjE1ODY2NDEyODZ9.g-QtGKN0RfsPflJs0yDjinjqC8hRdmYzwIki0jxmByU
+
+###
+
+PATCH http://localhost:3000/api/v1/admin/user/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJjcmVhdGVkX2F0IjoiMjAyMC0wNC0xMVQxMzoyNzo0Mi40MzJaIiwicm9sZSI6InVzZXIiLCJhY3RpdmUiOnRydWUsImlhdCI6MTU4NjYxODU3MSwiZXhwIjoxNTg2NzA0OTcxfQ.qWv94AXJjeIzE1zmWaIGa2--tCT1W5niw7gaH8Sb3ow
+
+{
+    "active": true
+}
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+    "email": "ashish@gmail.com",
+    "password": "asd"
+}
+
+###
+
+GET http://localhost:3000/api/v1/questions
+
+###
+
+POST http://localhost:3000/api/v1/questions/ask
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+{
+    "title": "How to run windows on pressure cooker?",
+    "description": "So yesterday i was using my mac os as usally as i use it on my pressure cooker and it came to my mind why not run windows on it? any suggestions from where should i start?"
+}
+
+
+###
+
+GET http://localhost:3000/api/v1/questions/1
+
+###
+
+POST http://localhost:3000/api/v1/questions/1/answer
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+{
+    "ans": "Shut up pls"
+}
+
+###
+
+POST http://localhost:3000/api/v1/questions/1/comment
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+{
+    "comment": "I think i got the solution!"
+}
+
+###
+
+GET http://localhost:3000/api/v1/users/2/answers
+
+###
+
+GET http://localhost:3000/api/v1/users/1/questions
+
+###
+
+GET http://localhost:3000/api/v1/users/1/comments
+
+###
+
+GET http://localhost:3000/api/v1/answers
+
+### Return all the comments from the database. Guard the route for only allowed users later.
+
+GET http://localhost:3000/api/v1/comments
+
+###
+
+POST http://localhost:3000/api/v1/answers/1/comment
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhc2hpc2hAZ21haWwuY29tIiwiaWF0IjoxNTg3MDUxMjU5LCJleHAiOjE1ODcxMzc2NTl9.ilPZR6fQH3eEhFnHrVSSH54jw2KuDzL-Dugzv-7wWHk
+
+{
+    "comment": "really bro?"
+}
