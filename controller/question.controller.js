@@ -6,7 +6,6 @@ const tableNames = require('../contants/tableNames');
 // DB Config
 const knex = require('../db/dbConfig');
 
-
 // Add a question to the database. GET /api/v1/questions/ask
 exports.createQuestion = async (req, res, next) => {
 
