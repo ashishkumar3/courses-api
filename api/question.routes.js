@@ -8,7 +8,7 @@ const questionController = require('../controller/question.controller');
 router.get('/', questionController.getAllQuestions);
 
 // get question info
-router.get('/:id', questionController.getQuestion);
+router.get('/:id', questionController.getQuestionDetails);
 
 // ask a question
 router.post('/ask', questionController.createQuestion);

@@ -1,11 +1,15 @@
 const knex = require('knex')({
     client: 'pg',
-    version: '8.0.0',
     connection: {
-        host: '127.0.0.1',
+        database: process.env.POSTGRES_DB,
         user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD,
-        database: process.env.POSTGRES_DB
+        password: process.env.POSTGRES_PASSWORD
+    },
+    migrations: {
+        directory: './db/migrations'
+    },
+    seeds: {
+        directory: './db/seeds'
     }
 });
 

@@ -7,9 +7,8 @@ const tableNames = require('../contants/tableNames');
 // DB Config
 const knex = require('../db/dbConfig');
 
-// Return all the answers in the database. 
+// Return all the answers in the database.
 // GET /api/v1/answers
-
 exports.getAllAnswers = async (req, res, next) => {
     try {
         const exists = await knex.schema.hasTable(tableNames.answer);

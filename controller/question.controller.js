@@ -39,6 +39,7 @@ exports.createQuestion = async (req, res, next) => {
         res.json({
             success: true,
             question: {
+                id: row[0].id,
                 created_at: row[0].created_at,
                 updated_at: row[0].updated_at,
                 description: row[0].description,
@@ -65,7 +66,20 @@ exports.getAllQuestions = async (req, res, next) => {
             return;
         }
 
-        const rows = await knex(tableNames.question).select('*');
+        const rows = await knex(tableNames.question).select('*').orderBy('created_at', 'desc');
+
+        // find questioner for each ques/row and append.
+
+        // let questions = rows.map(async row => {
+        //     let username = await findUser(row.user_id);
+        //     console.log({ ...row, ...username });
+        //     // return { ...row, ...username };
+        // });
+
+        for (let row of rows) {
+            let user = await findUser(row.user_id);
+            row.questioner = user.name;
+        }
 
         res.json(rows);
 
@@ -75,10 +89,18 @@ exports.getAllQuestions = async (req, res, next) => {
     }
 };
 
-// Get a specific question and answers to tha question
+async function findUser(user_id) {
+    const name = await knex(tableNames.user).select('name').where({
+        id: user_id
+    });
+    // console.log(name[0]);
+    return name[0];
+}
+
+// Get a specific question with answers and comments on that question
 // GET /api/v1/questions/:id
 
-exports.getQuestion = async (req, res, next) => {
+exports.getQuestionDetails = async (req, res, next) => {
 
     const ques_id = req.params.id;
 
@@ -96,28 +118,40 @@ exports.getQuestion = async (req, res, next) => {
             id: ques_id
         });
 
-        // get all answers to the question
+        // // get all answers to the question
         const answers = await knex(tableNames.answer).select('*').where({
             question_id: ques_id
         });
 
         const ansIds = [];
+        const userIds = [];
+
+        userIds.push(question[0].user_id);
 
         answers.forEach(answer => {
             ansIds.push(answer.id);
+            userIds.push(answer.user_id);
         });
+
+        const uniqueIds = userIds.filter(onlyUnique);
+
+        const users = await knex(tableNames.user).select('id', 'name').whereIn('id', uniqueIds);
 
         // get all the comments in the question and answers for the question.
         // 2 types of comments 
         // 1. Comment on the question
         // 2. Comment on the answers given to that question.
-        const commentsOnQues = await knex(tableNames.comment).select('*').where({
+
+        const comments = await knex(tableNames.comment).select('*').where({
             question_id: ques_id
+        }).orWhereIn('answer_id', ansIds);
+
+        comments.forEach(cmnt => {
+            userIds.push(cmnt.user_id);
         });
-        const commentsOnAns = await knex(tableNames.comment).select('*').whereIn('answer_id', ansIds);
 
         res.json({
-            question, answers, comments: [...commentsOnQues, ...commentsOnAns]
+            question, answers, comments, users
         });
 
     } catch (error) {
@@ -126,6 +160,10 @@ exports.getQuestion = async (req, res, next) => {
     }
 
 };
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
 
 // Answer a question POST /api/v1/questions/:id/answer
 exports.answerQuestion = async (req, res, next) => {
