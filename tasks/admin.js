@@ -27,7 +27,7 @@ async function createAdminUser() {
 
         console.log(updatedRows);
     } catch (error) {
-        return next(error);
+        console.log(error);
     }
 }
 
