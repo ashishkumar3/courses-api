@@ -66,7 +66,7 @@ exports.getAllQuestions = async (req, res, next) => {
             return;
         }
 
-        const rows = await knex(tableNames.question).select('*').orderBy('created_at', 'desc');
+        const rows = await knex(tableNames.question).select('*').orderBy('created_at', 'desc').limit(5);
 
         // find questioner for each ques/row and append.
 
