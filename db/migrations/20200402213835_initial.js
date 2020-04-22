@@ -10,31 +10,31 @@ const tableUtils = require('../../lib/tableUtils');
 
 
 exports.up = async (knex) => {
-    await Promise.all([
-        knex.schema.createTable(tableNames.user, table => {
-            table.increments().notNullable();
-            table.string('name').notNullable();
-            tableUtils.email(table, 'email').notNullable().unique();
-            tableUtils.password(table, 'password').notNullable();
-            table.string('role').notNullable();
-            table.boolean('active').notNullable();
-            // url(table, 'image_url');
-            // url(table, 'website_url');
-            // rating(table, 'rating');
-            // references(table, 'state');
-            // references(table, 'country');
-            tableUtils.addDefaultColumns(table);
-        }),
-        knex.schema.createTable(tableNames.country, table => {
-            table.increments().notNullable();
-            table.string('name').notNullable();
-            table.string('code').notNullable();
-        })
-        // createNameTable(knex, tableNames.student_type),
-        // createNameTable(knex, tableNames.state),
-        // createNameTable(knex, tableNames.country),
-        // createNameTable(knex, tableNames.course_tag)
-    ]);
+    // await Promise.all([
+    await knex.schema.createTable(tableNames.user, table => {
+        table.increments().notNullable();
+        table.string('name').notNullable();
+        tableUtils.email(table, 'email').notNullable().unique();
+        tableUtils.password(table, 'password').notNullable();
+        table.string('role').notNullable();
+        table.boolean('active').notNullable();
+        // url(table, 'image_url');
+        // url(table, 'website_url');
+        // rating(table, 'rating');
+        // references(table, 'state');
+        // references(table, 'country');
+        tableUtils.addDefaultColumns(table);
+    });
+    // createNameTable(knex, tableNames.student_type),
+    // createNameTable(knex, tableNames.state),
+    // createNameTable(knex, tableNames.country),
+    // createNameTable(knex, tableNames.course_tag)
+    // ]);
+    await knex.schema.createTable(tableNames.country, table => {
+        table.increments().notNullable();
+        table.string('name').notNullable();
+        table.string('code').notNullable();
+    });
 
     // await knex.schema.createTable(tableNames.student, table => {
     //     table.increments().notNullable();
