@@ -6,7 +6,6 @@ const tableNames = require('../../contants/tableNames');
 exports.seed = async (knex) => {
   // Deletes ALL existing entries
 
-
   await orderedTableNames.reduce(async (promise, table_name) => {
     await promise;
     console.log(`Clearng ${table_name}`);

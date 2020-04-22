@@ -15,8 +15,7 @@ async function createAdminUser() {
             return;
         }
 
-        const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 12);
-
+        const hashedPassword = await bcrypt.hash('admin', 12);
 
         const updatedRows = await knex('user').insert({
             name: 'admin',

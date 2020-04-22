@@ -1,7 +1,7 @@
 const knex = require('knex')({
     client: 'pg',
     connection: {
-        database: process.env.POSTGRES_DB,
+        database: process.env.DATABASE_URL,
         user: process.env.POSTGRES_USER,
         password: process.env.POSTGRES_PASSWORD
     },

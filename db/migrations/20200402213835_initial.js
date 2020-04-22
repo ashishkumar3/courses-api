@@ -79,7 +79,6 @@ exports.up = async (knex) => {
     // answer
     await knex.schema.createTable(tableNames.answer, table => {
         table.increments().notNullable();
-        table.string('title');
         table.string('description');
         tableUtils.rating(table, 'rating');
         tableUtils.references(table, tableNames.user);
