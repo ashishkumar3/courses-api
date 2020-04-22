@@ -22,8 +22,9 @@ const adminRoute = require('./api/admin.routes');
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:4200'
+    origin: '*'
 }));
+
 app.use(volleyball);
 app.use(express.json());
 app.use(helmet());

@@ -7,8 +7,6 @@ const tableUtils = require('../../lib/tableUtils');
  * @param {Knex} knex
  */
 
-
-
 exports.up = async (knex) => {
     // await Promise.all([
     await knex.schema.createTable(tableNames.user, table => {
