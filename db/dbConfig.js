@@ -1,16 +1,8 @@
-const knex = require('knex')({
-    client: 'pg',
-    connection: {
-        database: process.env.DATABASE_URL,
-        user: process.env.POSTGRES_USER,
-        password: process.env.POSTGRES_PASSWORD
-    },
-    migrations: {
-        directory: './db/migrations'
-    },
-    seeds: {
-        directory: './db/seeds'
-    }
-});
+const environment = process.env.NODE_ENV || 'development';
+
+const config = require('../knexfile');
+const environmentConfig = config[environment];
+
+const knex = require('knex')(environmentConfig);
 
 module.exports = knex;
